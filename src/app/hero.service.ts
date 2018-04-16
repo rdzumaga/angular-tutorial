@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { MessageService } from './message.service';
 import { catchError, map, tap } from 'rxjs/operators';
+import { notImplemented } from '@angular/core/src/render3/util';
 
 
 const httpOptions = {
@@ -65,6 +66,20 @@ export class HeroService {
         catchError(this.handleError<Hero>(`delete hero id=${id}`))
     );
   }
+
+  searchHeroes (term: string): Observable<Hero[]> {
+
+    if (!term.trim()) {
+      return of([]);
+    }
+
+    return this.http.get<Hero[]>(`api/heroes/?name=${term}`)
+      .pipe(
+        tap(_ => this.log(`found heroes matching ${term}`)),
+        catchError(this.handleError<Hero[]>('searchHeroes', []))
+    );
+  }
+
   /**
  * Handle Http operation that failed.
  * Let the app continue.
